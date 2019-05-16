@@ -17,7 +17,6 @@
 package io.rsocket;
 
 import static io.rsocket.keepalive.KeepAliveSupport.KeepAlive;
-import static io.rsocket.keepalive.KeepAliveSupport.ServerKeepAliveSupport;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -31,7 +30,6 @@ import io.rsocket.internal.LimitableRequestPublisher;
 import io.rsocket.internal.UnboundedProcessor;
 import io.rsocket.keepalive.KeepAliveFramesAcceptor;
 import io.rsocket.keepalive.KeepAliveHandler;
-import io.rsocket.keepalive.KeepAliveSupport;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -60,7 +58,7 @@ class RSocketServer implements ResponderRSocket {
 
   private final UnboundedProcessor<ByteBuf> sendProcessor;
   private final ByteBufAllocator allocator;
-  private final KeepAliveFramesAcceptor keepAliveFramesAcceptor;
+  private final KeepAliveFramesAcceptor keepAliveFramesAcceptor = null;
 
   /*client responder*/
   RSocketServer(
@@ -114,14 +112,14 @@ class RSocketServer implements ResponderRSocket {
             })
         .subscribe(null, errorConsumer);
 
-    if (keepAliveTickPeriod != 0 && keepAliveHandler != null) {
+    /*if (keepAliveTickPeriod != 0 && keepAliveHandler != null) {
       KeepAliveSupport keepAliveSupport =
           new ServerKeepAliveSupport(allocator, keepAliveTickPeriod, keepAliveAckTimeout);
       keepAliveFramesAcceptor =
           keepAliveHandler.start(keepAliveSupport, sendProcessor::onNext, this::terminate);
     } else {
       keepAliveFramesAcceptor = null;
-    }
+    }*/
   }
 
   private void terminate(KeepAlive keepAlive) {
