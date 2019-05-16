@@ -85,13 +85,7 @@ class RSocketClient implements RSocket {
     connection.onClose().doFinally(signalType -> terminate()).subscribe(null, errorConsumer);
 
     connection
-        .send(
-            sendProcessor.doOnRequest(
-                r -> {
-                  for (LimitableRequestPublisher lrp : senders.values()) {
-                    lrp.increaseInternalLimit(r);
-                  }
-                }))
+        .send(sendProcessor)
         .doFinally(this::handleSendProcessorCancel)
         .subscribe(null, this::handleSendProcessorError);
 
@@ -335,8 +329,7 @@ class RSocketClient implements RSocket {
                                       .transform(
                                           f -> {
                                             LimitableRequestPublisher<Payload> wrapped =
-                                                LimitableRequestPublisher.wrap(
-                                                    f, sendProcessor.available());
+                                                LimitableRequestPublisher.wrap(f);
                                             // Need to set this to one for first the frame
                                             wrapped.increaseRequestLimit(1);
                                             senders.put(streamId, wrapped);
