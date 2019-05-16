@@ -625,7 +625,6 @@ public abstract class LoadBalancedRSocketMono extends Mono<RSocket>
 
                 synchronized (LoadBalancedRSocketMono.this) {
                   if (activeSockets.size() >= targetAperture) {
-                    quickSlowestRS();
                     pendingSockets -= 1;
                   }
                 }
